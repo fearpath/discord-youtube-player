@@ -14,7 +14,7 @@ const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
 const { execFile, spawn } = require('child_process');
-const ffmpegPath = 'ffmpeg';
+const ffmpegPath = require('ffmpeg-static');
 dotenv.config();
 const TOKEN = process.env.DISCORD_TOKEN;
 const COOKIES_FILE = fs.existsSync('cookies.txt') ? path.resolve('cookies.txt') : null;
@@ -92,17 +92,23 @@ async function ytdlpInfo(query) {
         }
     }
     const search = isUrl ? query : `ytsearch1:${query}`;
-    const args = [
-        ...YTDLP_BASE_ARGS,
-        '--extractor-args', 'youtube:player_client=android_vr',
-        search
-    ];
+    const args = [...YTDLP_BASE_ARGS, '--js-runtimes', 'node'];
     if (COOKIES_FILE) args.push('--cookies', COOKIES_FILE);
-
+    args.push(search);
     try {
         return await ytdlpExec(args);
-    } catch (e) {
-        throw new Error(`Не удалось загрузить трек: ${e.message.substring(0, 100)}`);
+    } catch (e1) {
+        console.log(`⚠️ Попытка 1 не удалась: ${e1.message.substring(0, 150)}`);
+    }
+    try {
+        const args2 = [
+            ...YTDLP_BASE_ARGS,
+            '--extractor-args', 'youtube:player_client=android_vr',
+            search
+        ];
+        return await ytdlpExec(args2);
+    } catch (e2) {
+        throw new Error(`Не удалось загрузить трек: ${e2.message.substring(0, 100)}`);
     }
 }
 function prefetchTrackInfo(url) {
