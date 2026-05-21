@@ -14,7 +14,7 @@ const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
 const { execFile, spawn } = require('child_process');
-const ffmpegPath = require('ffmpeg-static');
+const ffmpegPath = 'ffmpeg';
 dotenv.config();
 const TOKEN = process.env.DISCORD_TOKEN;
 const COOKIES_FILE = fs.existsSync('cookies.txt') ? path.resolve('cookies.txt') : null;
