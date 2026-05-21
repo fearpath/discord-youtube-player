@@ -92,23 +92,17 @@ async function ytdlpInfo(query) {
         }
     }
     const search = isUrl ? query : `ytsearch1:${query}`;
-    const args = [...YTDLP_BASE_ARGS, '--js-runtimes', 'node'];
+    const args = [
+        ...YTDLP_BASE_ARGS,
+        '--extractor-args', 'youtube:player_client=android_vr',
+        search
+    ];
     if (COOKIES_FILE) args.push('--cookies', COOKIES_FILE);
-    args.push(search);
+
     try {
         return await ytdlpExec(args);
-    } catch (e1) {
-        console.log(`⚠️ Попытка 1 не удалась: ${e1.message.substring(0, 150)}`);
-    }
-    try {
-        const args2 = [
-            ...YTDLP_BASE_ARGS,
-            '--extractor-args', 'youtube:player_client=android_vr',
-            search
-        ];
-        return await ytdlpExec(args2);
-    } catch (e2) {
-        throw new Error(`Не удалось загрузить трек: ${e2.message.substring(0, 100)}`);
+    } catch (e) {
+        throw new Error(`Не удалось загрузить трек: ${e.message.substring(0, 100)}`);
     }
 }
 function prefetchTrackInfo(url) {
